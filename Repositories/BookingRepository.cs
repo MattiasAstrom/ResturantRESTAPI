@@ -19,10 +19,19 @@ namespace ResturantRESTAPI.Repositories
             if (booking == null)
                 return false;
             
+            var newCustomer = new Customer
+            {
+                Name = booking.CustomerName,
+                PhoneNumber = booking.CustomerPhoneNumber
+            };
+
+            _context.Add(newCustomer);
+            await _context.SaveChangesAsync();
+
             var newBooking = new Booking
             {
-                FK_Table = booking.FK_Table,
-                FK_Customer = booking.FK_Customer,
+                FK_Table = booking.TableID,
+                FK_Customer = newCustomer.Id,
                 StartTime = booking.StartTime,
                 NumberOfGuests = booking.NumberOfGuests
             };

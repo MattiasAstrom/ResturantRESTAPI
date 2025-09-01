@@ -2,8 +2,9 @@
 {
     public class BookingDTO
     {
-        public int FK_Table { get; set; }
-        public int FK_Customer { get; set; }
+        public int TableID { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerPhoneNumber { get; set; }
         public DateTime StartTime { get; set; }
         public int NumberOfGuests { get; set; }
     }
