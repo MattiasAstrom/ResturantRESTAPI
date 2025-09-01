@@ -1,4 +1,5 @@
-﻿using ResturantRESTAPI.Models;
+﻿using ResturantRESTAPI.DTOs;
+using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Repositories.IRepositories;
 using ResturantRESTAPI.Services.IService;
 
@@ -13,17 +14,17 @@ namespace ResturantRESTAPI.Services
             _tableRepo = repo;
         }
 
-        public Task<bool> AddTableAsync(Table newTable)
+        public Task<bool> AddTableAsync(TableDTO newTable)
         {
             return _tableRepo.AddTableAsync(newTable);
         }
 
-        public Task<List<Table>> GetAllTablesAsync()
+        public Task<List<TableDTO>> GetAllTablesAsync()
         {
             return _tableRepo.GetAllTablesAsync();
         }
 
-        public Task<Table> GetTableByIdAsync(int tableId)
+        public Task<TableDTO> GetTableByIdAsync(int tableId)
         {
             return _tableRepo.GetTableByIdAsync(tableId);
         }

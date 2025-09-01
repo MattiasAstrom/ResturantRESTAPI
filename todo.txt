@@ -34,7 +34,7 @@ För att säkerställa att systemet fungerar effektivt ska du genomföra följan
 
 
 TODO while working on part 2 assignment:
-- []  Fix DTOs and AutoMapper
-- []  Cleanup Controllers (AdminController and UserController and AuthController should be one controller probably)
+- [X]  Fix DTOs and AutoMapper
+- [X]  Cleanup Controllers (AdminController and UserController and AuthController should be one controller probably)
 - []  Double check Asyncs and proper return codes
 - []  Change the usage of DateTimes

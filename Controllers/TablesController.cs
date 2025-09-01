@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ResturantRESTAPI.DTOs;
 using ResturantRESTAPI.Services.IService;
 
 namespace ResturantRESTAPI.Controllers
@@ -27,7 +28,7 @@ namespace ResturantRESTAPI.Controllers
 
         [HttpPost("create")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateBooking([FromBody] ResturantRESTAPI.Models.Booking booking)
+        public async Task<IActionResult> CreateBooking([FromBody] BookingDTO booking)
         {
             if (booking == null)
             {
@@ -42,7 +43,7 @@ namespace ResturantRESTAPI.Controllers
         }
 
         [HttpDelete("CustomerCancel")]
-        public async Task<IActionResult> CancelBooking([FromBody] ResturantRESTAPI.Models.Customer customer)
+        public async Task<IActionResult> CancelBooking([FromBody] CustomerDTO customer)
         {
             if (customer == null)
             {

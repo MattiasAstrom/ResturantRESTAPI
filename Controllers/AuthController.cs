@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ResturantRESTAPI.Data;
+using ResturantRESTAPI.DTOs;
 using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Utility;
 
@@ -20,13 +21,13 @@ namespace ResturantRESTAPI.Controllers
         }
 
         [HttpPost("Admin Login")]
-        public async Task<IActionResult> Login(Admin admin)
+        public async Task<IActionResult> Login(AdminDTO admin)
         {
             var validAdmin = await _context.Admins.FirstOrDefaultAsync(a => a.Username == admin.Username);
             if (validAdmin == null)
                 return Unauthorized("Invalid Info");
 
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(admin.PasswordHash, validAdmin.PasswordHash);
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(admin.PasswordHashed, validAdmin.PasswordHash);
             if (!isPasswordValid)
                 return Unauthorized("Invalid Info");
 
@@ -36,17 +37,23 @@ namespace ResturantRESTAPI.Controllers
         }
 
         [HttpPost("Admin Register")]
-        public async Task<IActionResult> Register(Admin admnin)
+        public async Task<IActionResult> Register(AdminDTO admnin)
         {
             var existingAdmin = await _context.Admins.FirstOrDefaultAsync(a => a.Username == "admin");
             if (existingAdmin != null)
             {
                 return BadRequest("Admin user already exists.");
             }
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(admnin.PasswordHash);
-            admnin.PasswordHash = hashedPassword;
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(admnin.PasswordHashed);
+            admnin.PasswordHashed = hashedPassword;
 
-            _context.Admins.Add(admnin);
+            var convertToAdmin = new Admin
+            {
+                Username = admnin.Username,
+                PasswordHash = admnin.PasswordHashed
+            };
+
+            _context.Admins.Add(convertToAdmin);
             await _context.SaveChangesAsync();
             return Created();
         }

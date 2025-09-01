@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ResturantRESTAPI.DTOs;
 using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Services.IService;
 
@@ -26,7 +27,7 @@ namespace ResturantRESTAPI.Controllers
         //Admin stuff
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult AddMenuItem([FromBody] Models.MenuItem menuItem)
+        public IActionResult AddMenuItem([FromBody] MenuItemDTO menuItem)
         {
             if (menuItem == null)
             {
@@ -49,7 +50,7 @@ namespace ResturantRESTAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult UpdateMenuItemAsync(int menuItemId, MenuItem updatedMenuItem)
+        public IActionResult UpdateMenuItemAsync(int menuItemId, MenuItemDTO updatedMenuItem)
         {
             var updated = _menuItemService.UpdateMenuItemAsync(menuItemId, updatedMenuItem).Result;
             if (!updated)

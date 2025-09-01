@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ResturantRESTAPI.Data;
+using ResturantRESTAPI.DTOs;
 using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Repositories.IRepositories;
 
@@ -14,22 +15,46 @@ namespace ResturantRESTAPI.Repositories
             _context = ctx;
         }
 
-        public async Task<bool> AddTableAsync(Table newTable)
+        public async Task<bool> AddTableAsync(TableDTO newTable)
         {
-            await _context.Tables.AddAsync(newTable);
+            if (newTable == null) return false;
+
+            var table = new Table
+            {
+                TableNumber = newTable.TableNumber,
+                Capacity = newTable.Capacity
+            };
+            await _context.Tables.AddAsync(table);
+
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<Table>> GetAllTablesAsync()
+        public async Task<List<TableDTO>> GetAllTablesAsync()
         {
             var allTables = await _context.Tables.ToListAsync();
-            return allTables;
+            List<TableDTO> tableDTOs = new List<TableDTO>();
+            foreach (var item in allTables)
+            {
+                var temp = new TableDTO
+                {
+                    TableNumber = item.TableNumber,
+                    Capacity = item.Capacity
+                };
+                tableDTOs.Add(temp);
+            }
+            return tableDTOs;
         }
 
-        public async Task<Table> GetTableByIdAsync(int tableId)
+        public async Task<TableDTO> GetTableByIdAsync(int tableId)
         {
             var table = await _context.Tables.FirstOrDefaultAsync(t => t.Id == tableId);
-            return table;
+            if (table == null) return null;
+            var tableDTO = new TableDTO
+            {
+                TableNumber = table.TableNumber,
+                Capacity = table.Capacity
+            };
+            return tableDTO;
         }
 
         public async Task<bool> RemoveTableAsync(int tableId)

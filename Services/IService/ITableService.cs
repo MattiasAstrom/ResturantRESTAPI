@@ -1,13 +1,13 @@
-﻿using ResturantRESTAPI.Models;
+﻿using ResturantRESTAPI.DTOs;
 
 namespace ResturantRESTAPI.Services.IService
 {
     public interface ITableService
     {
-        Task<bool> AddTableAsync(Table newTable);
+        Task<bool> AddTableAsync(TableDTO newTable);
         Task<bool> RemoveTableAsync(int tableId);
         Task<bool> UpdateTableCapacityAsync(int tableId, int newCapacity);
-        Task<List<Table>> GetAllTablesAsync();
-        Task<Table> GetTableByIdAsync(int tableId);
+        Task<List<TableDTO>> GetAllTablesAsync();
+        Task<TableDTO> GetTableByIdAsync(int tableId);
     }
 }

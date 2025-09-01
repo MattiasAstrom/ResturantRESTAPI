@@ -1,4 +1,6 @@
-﻿using ResturantRESTAPI.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ResturantRESTAPI.Data;
+using ResturantRESTAPI.DTOs;
 using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Repositories.IRepositories;
 
@@ -12,14 +14,25 @@ namespace ResturantRESTAPI.Repositories
             _context = ctx;
         }
 
-        public async Task<bool> CreateBookingAsync(Booking booking)
+        public async Task<bool> CreateBookingAsync(BookingDTO booking)
         {
-            _context.Add(booking);
+            if (booking == null)
+                return false;
+            
+            var newBooking = new Booking
+            {
+                FK_Table = booking.FK_Table,
+                FK_Customer = booking.FK_Customer,
+                StartTime = booking.StartTime,
+                NumberOfGuests = booking.NumberOfGuests
+            };
+
+            _context.Add(newBooking);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<List<Table>> GetAvailableTablesAsync(DateTime startTime, int numberOfGuests)
+        public async Task<List<TableDTO>> GetAvailableTablesAsync(DateTime startTime, int numberOfGuests)
         {
             //fit the number of guests
             var tables = _context.Tables
@@ -37,16 +50,25 @@ namespace ResturantRESTAPI.Repositories
                 .Where(t => !bookedTableIds.Contains(t.Id))
                 .ToList();
 
-            return availableTables;
+            //map to DTO
+            var availableTableDTOs = availableTables
+                .Select(t => new TableDTO
+                {
+                    TableNumber = t.TableNumber,
+                    Capacity = t.Capacity,
+                    IsOccupied = t.IsOccupied
+                })
+                .ToList();
+
+            return availableTableDTOs;
         }
 
-        public async Task<bool> CancelBookingAsync(Customer customer)
+        public async Task<bool> CancelBookingAsync(CustomerDTO customer)
         {
-            var booking = _context.Bookings.FirstOrDefault(t => t.FK_Customer == customer.Id);
-
+            var booking = await _context.Bookings.FirstOrDefaultAsync(t => t.Customer.PhoneNumber == customer.PhoneNumber);
             if (booking == null)
                 return false;
-
+            
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
             return true;

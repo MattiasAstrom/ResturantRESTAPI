@@ -1,4 +1,5 @@
-﻿using ResturantRESTAPI.Models;
+﻿using ResturantRESTAPI.DTOs;
+using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Repositories.IRepositories;
 using ResturantRESTAPI.Services.IService;
 
@@ -12,17 +13,17 @@ namespace ResturantRESTAPI.Services
             _menuItemRepo = menuItemRepo;           
         }
 
-        public Task<bool> AddMenuItemAsync(MenuItem newMenuItem)
+        public Task<bool> AddMenuItemAsync(MenuItemDTO newMenuItem)
         {
             return _menuItemRepo.AddMenuItemAsync(newMenuItem);
         }
 
-        public Task<List<MenuItem>> GetAllMenuItemsAsync()
+        public Task<List<MenuItemDTO>> GetAllMenuItemsAsync()
         {
             return _menuItemRepo.GetAllMenuItemsAsync();
         }
 
-        public Task<MenuItem> GetMenuItemByIdAsync(int menuItemId)
+        public Task<MenuItemDTO> GetMenuItemByIdAsync(int menuItemId)
         {
             return _menuItemRepo.GetMenuItemByIdAsync(menuItemId);
         }
@@ -32,7 +33,7 @@ namespace ResturantRESTAPI.Services
             return _menuItemRepo.RemoveMenuItemAsync(menuItemId);
         }
 
-        public Task<bool> UpdateMenuItemAsync(int menuItemId, MenuItem updatedMenuItem)
+        public Task<bool> UpdateMenuItemAsync(int menuItemId, MenuItemDTO updatedMenuItem)
         {
             return _menuItemRepo.UpdateMenuItemAsync(menuItemId, updatedMenuItem);
         }

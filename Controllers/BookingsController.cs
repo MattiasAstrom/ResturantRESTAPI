@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ResturantRESTAPI.DTOs;
 using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Services.IService;
 
@@ -25,7 +26,7 @@ namespace ResturantRESTAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBooking([FromBody] Booking booking)
+        public async Task<IActionResult> CreateBooking([FromBody] BookingDTO booking)
         {
             var result = await _bookingService.CreateBookingAsync(booking);
             if (result)
@@ -36,13 +37,13 @@ namespace ResturantRESTAPI.Controllers
 
         [HttpPost]
         [Route("cancel")]
-        public async Task<IActionResult> CancelBooking([FromBody] Customer customer)
+        public async Task<IActionResult> CancelBooking([FromBody] CustomerDTO customer)
         {
             var result = await _bookingService.CancelBookingAsync(customer);
             if (result)
-                return Ok(new { message = "Booking cancelled successfully" });
+                return Ok(new { message = "Cancelled successfully" });
             else
-                return NotFound(new { message = "No booking found for the customer" });
+                return NotFound(new { message = "No booking found" });
         }
 
         //To be the Admin cancel booking based on any details

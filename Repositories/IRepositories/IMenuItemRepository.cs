@@ -1,13 +1,14 @@
-﻿using ResturantRESTAPI.Models;
+﻿using ResturantRESTAPI.DTOs;
+using ResturantRESTAPI.Models;
 
 namespace ResturantRESTAPI.Repositories.IRepositories
 {
     public interface IMenuItemRepository
     {
-        Task<bool> AddMenuItemAsync(MenuItem newItem);
+        Task<bool> AddMenuItemAsync(MenuItemDTO newItem);
         Task<bool> RemoveMenuItemAsync(int itemId);
-        Task<bool> UpdateMenuItemAsync(int itemId, MenuItem updatedItem);
-        Task<MenuItem> GetMenuItemByIdAsync(int itemId);
-        Task<List<MenuItem>> GetAllMenuItemsAsync();
+        Task<bool> UpdateMenuItemAsync(int itemId, MenuItemDTO updatedItem);
+        Task<MenuItemDTO> GetMenuItemByIdAsync(int itemId);
+        Task<List<MenuItemDTO>> GetAllMenuItemsAsync();
     }
 }

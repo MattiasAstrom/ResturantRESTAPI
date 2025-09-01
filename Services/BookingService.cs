@@ -1,4 +1,5 @@
-﻿using ResturantRESTAPI.Models;
+﻿using ResturantRESTAPI.DTOs;
+using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Repositories.IRepositories;
 using ResturantRESTAPI.Services.IService;
 
@@ -13,17 +14,17 @@ namespace RestaurantBookingAPI.Services
             _bookingRepo = bookingRepo;
         }
 
-        public async Task<IEnumerable<Table>> GetAvailableTablesAsync(DateTime startTime, int numberOfGuests)
+        public async Task<IEnumerable<TableDTO>> GetAvailableTablesAsync(DateTime startTime, int numberOfGuests)
         {
             return await _bookingRepo.GetAvailableTablesAsync(startTime, numberOfGuests);
         }
 
-        public async Task<bool> CreateBookingAsync(Booking booking)
+        public async Task<bool> CreateBookingAsync(BookingDTO booking)
         {
             return await _bookingRepo.CreateBookingAsync(booking);
         }
         
-        public async Task<bool> CancelBookingAsync(Customer customer)
+        public async Task<bool> CancelBookingAsync(CustomerDTO customer)
         {
             return await _bookingRepo.CancelBookingAsync(customer);
         }
