@@ -27,7 +27,7 @@ namespace ResturantRESTAPI.Controllers
             if (validAdmin == null)
                 return Unauthorized("Invalid Info");
 
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(admin.PasswordHashed, validAdmin.PasswordHash);
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(admin.Password, validAdmin.PasswordHash);
             if (!isPasswordValid)
                 return Unauthorized("Invalid Info");
 
@@ -44,13 +44,13 @@ namespace ResturantRESTAPI.Controllers
             {
                 return BadRequest("Admin user already exists.");
             }
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(admnin.PasswordHashed);
-            admnin.PasswordHashed = hashedPassword;
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(admnin.Password);
+            admnin.Password = hashedPassword;
 
             var convertToAdmin = new Admin
             {
                 Username = admnin.Username,
-                PasswordHash = admnin.PasswordHashed
+                PasswordHash = admnin.Password
             };
 
             _context.Admins.Add(convertToAdmin);
