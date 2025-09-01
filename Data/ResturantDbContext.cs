@@ -27,9 +27,9 @@ namespace ResturantRESTAPI.Data
 
 
             modelBuilder.Entity<Booking>()
-    .HasOne(b => b.Customer)
-    .WithMany(c => c.Bookings)
-    .HasForeignKey(b => b.FK_Customer);
+                .HasOne(b => b.Customer)
+                .WithMany(c => c.Bookings)
+                .HasForeignKey(b => b.FK_Customer);
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Table)
                 .WithMany(t => t.Bookings)
@@ -41,11 +41,11 @@ namespace ResturantRESTAPI.Data
             );
 
             modelBuilder.Entity<Table>().HasData(
-                new Table { Id = 1, Capacity = 2 },
-                new Table { Id = 2, Capacity = 4 },
-                new Table { Id = 3, Capacity = 4 },
-                new Table { Id = 4, Capacity = 6 },
-                new Table { Id = 5, Capacity = 8 }
+                new Table { Id = 1, TableNumber = 1, Capacity = 2, IsOccupied = false },
+                new Table { Id = 2, TableNumber = 2, Capacity = 4, IsOccupied = false },
+                new Table { Id = 3, TableNumber = 3, Capacity = 4, IsOccupied = false },
+                new Table { Id = 4, TableNumber = 4, Capacity = 6, IsOccupied = false },
+                new Table { Id = 5, TableNumber = 5, Capacity = 8, IsOccupied = false }
             );
 
             modelBuilder.Entity<Customer>().HasData(

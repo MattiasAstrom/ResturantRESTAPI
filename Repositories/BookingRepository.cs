@@ -19,16 +19,16 @@ namespace ResturantRESTAPI.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<Table>> GetAvailableTablesAsync(DateTime startTime, int numberOfGuests)
+        public async Task<List<Table>> GetAvailableTablesAsync(DateTime startTime, int numberOfGuests)
         {
-            //grab all tables that can fit the number of guests
-            var tables =  _context.Tables
+            //fit the number of guests
+            var tables = _context.Tables
                 .Where(t => t.Capacity >= numberOfGuests)
                 .ToList();
 
             //grab overlapping bookings
             var bookedTableIds = _context.Bookings
-                .Where(b => b.StartTime <= startTime && startTime.AddHours(2) >= startTime)
+                .Where(b => b.StartTime <= startTime.AddHours(-2) && startTime.AddHours(2) >= startTime)
                 .Select(b => b.FK_Table)
                 .ToList();
 
@@ -36,19 +36,46 @@ namespace ResturantRESTAPI.Repositories
             var availableTables = tables
                 .Where(t => !bookedTableIds.Contains(t.Id))
                 .ToList();
-            
+
             return availableTables;
         }
 
         public async Task<bool> CancelBookingAsync(Customer customer)
         {
-            throw new NotImplementedException();
+            var booking = _context.Bookings.FirstOrDefault(t => t.FK_Customer == customer.Id);
+
+            if (booking == null)
+                return false;
+
+            _context.Bookings.Remove(booking);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task<bool> CancelBookingAsync(Booking booking)
+        //admin cancellation based on any parameter
+        public async Task<bool> CancelBookingAsync(int? bookingID = null, int? tableID = 0, int? CustomeerID = 0, DateTime? bookingDate = null)
         {
-            throw new NotImplementedException();
-        }
+            //check if any parameter is provided
+            if (bookingID == null && tableID == 0 && CustomeerID == 0 && bookingDate == null)
+                return false;
 
+            //remove the booking based on the provided parameter
+            var booking = new Booking();
+            if (bookingID != null)
+                booking = _context.Bookings.FirstOrDefault(t => t.Id == bookingID);
+            else if (tableID != 0)
+                booking = _context.Bookings.FirstOrDefault(t => t.FK_Table == tableID);
+            else if (CustomeerID != 0)
+                booking = _context.Bookings.FirstOrDefault(t => t.FK_Customer == CustomeerID);
+            else if (bookingDate != null)
+                booking = _context.Bookings.FirstOrDefault(t => t.StartTime == bookingDate);
+
+            if (booking == null)
+                return false;
+
+            _context.Bookings.Remove(booking);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

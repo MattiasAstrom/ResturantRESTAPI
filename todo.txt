@@ -2,19 +2,19 @@
 Först ska du skapa en databas med code-first modellen och definiera strukturen för att hantera de centrala delarna av systemet. Databasen ska kunna hantera följande:
 
 - [X]  Systemet ska kunna lagra information om restaurangens bord, inklusive kapacitet och bordsnummer.
-- []  Systemet ska även hantera administratörer med uppgifter för inloggning som används av API:et för JWT‑autentisering. Förslagsvis `Username` och `PasswordHash`
+- [X]  Systemet ska även hantera administratörer med uppgifter för inloggning som används av API:et för JWT‑autentisering. Förslagsvis `Username` och `PasswordHash`
 - [X]  Systemet ska kunna lagra grundläggande kontaktuppgifter för den person som gör bokningen (t.ex namn och telefonnummer).
-- []  Det ska gå att lagra bokningar som kopplas till specifika bord och till den person som bokat, och som innehåller information om datum, tid och antal gäster.
-- []  En bokning varar som standard i två timmar, vilket innebär att ett bord ska anses upptaget under den perioden.
+- [X]  Det ska gå att lagra bokningar som kopplas till specifika bord och till den person som bokat, och som innehåller information om datum, tid och antal gäster.
+- [X]  En bokning varar som standard i två timmar, vilket innebär att ett bord ska anses upptaget under den perioden.
 - [X]  Systemet ska även hantera en meny där varje rätt har ett namn, pris, beskrivning samt en kolumn `IsPopular` (bool) som markerar om rätten är populär.
 
 📶 **Skapa ett REST-API**
 Nästa steg är att utveckla ett REST-API med ASP.NET Core som ska stödja följande funktioner:
 
-- []  Hantera restaurangens bord och kunder med möjlighet att lägga till, uppdatera, läsa och ta bort information.
-- []  Skapa och hantera bokningar, där ett bord endast kan bokas om det är ledigt vid vald tidpunkt.
+- [X]  Hantera restaurangens bord och kunder med möjlighet att lägga till, uppdatera, läsa och ta bort information.
+- [X]  Skapa och hantera bokningar, där ett bord endast kan bokas om det är ledigt vid vald tidpunkt.
         - En bokning gör bordet upptaget i två timmar från starttid, vilket används vid kontroll av tillgänglighet.
-- []  Hämta en lista över lediga bord för ett valt datum, klockslag och antal gäster.
+- [X]  Hämta en lista över lediga bord för ett valt datum, klockslag och antal gäster.
         - Endast bord som inte har någon bokning som överlappar den valda tiden och som har tillräcklig kapacitet ska returneras.
         - Notera: Vid kontroll av lediga bord ska bokningar anses blockera bordet i två timmar från sin starttid.
          (Exempel:** Om ett bord är bokat 18:00 så blockeras det två timmar före och två timmar efter starttiden. Det innebär att bokningar som startar mellan 16:01 och 19:59 inte är tillåtna. Bordet blir ledigt igen 20:00.)

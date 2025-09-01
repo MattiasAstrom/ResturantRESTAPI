@@ -3,6 +3,8 @@ using RestaurantBookingAPI.Services;
 using ResturantRESTAPI.Data;
 using ResturantRESTAPI.Repositories;
 using ResturantRESTAPI.Repositories.IRepositories;
+using ResturantRESTAPI.Services;
+using ResturantRESTAPI.Services.IService;
 
 namespace ResturantRESTAPI
 {
@@ -17,8 +19,13 @@ namespace ResturantRESTAPI
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+            builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+            builder.Services.AddScoped<ITableRepository, TableRepository>();
+            
             builder.Services.AddScoped<IBookingService, BookingService>();
-
+            builder.Services.AddScoped<IMenuItemService, MenuItemService>();
+            builder.Services.AddScoped<ITableService, TableService>();
+            
             builder.Services.AddControllers();
 
 
