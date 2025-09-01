@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Services.IService;
 
 namespace ResturantRESTAPI.Controllers
@@ -34,6 +35,7 @@ namespace ResturantRESTAPI.Controllers
             var createdMenuItem = _menuItemService.AddMenuItemAsync(menuItem);
             return CreatedAtAction(nameof(GetAllMenuItems), new { id = createdMenuItem.Id }, createdMenuItem);
         }
+
         [HttpDelete]
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteMenuItem(int id)
@@ -42,7 +44,19 @@ namespace ResturantRESTAPI.Controllers
             {
                 return NotFound($"Menu item with id {id} not found.");
             }
-            return NoContent();
+            return Ok("Menu item Deleted successfully.");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public IActionResult UpdateMenuItemAsync(int menuItemId, MenuItem updatedMenuItem)
+        {
+            var updated = _menuItemService.UpdateMenuItemAsync(menuItemId, updatedMenuItem).Result;
+            if (!updated)
+            {
+                return NotFound($"Menu item with id {menuItemId} not found.");
+            }
+            return Ok("Menu item updated successfully.");
         }
     }
 }

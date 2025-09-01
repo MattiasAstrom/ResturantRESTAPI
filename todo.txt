@@ -18,16 +18,22 @@ Nästa steg är att utveckla ett REST-API med ASP.NET Core som ska stödja följ
         - Endast bord som inte har någon bokning som överlappar den valda tiden och som har tillräcklig kapacitet ska returneras.
         - Notera: Vid kontroll av lediga bord ska bokningar anses blockera bordet i två timmar från sin starttid.
          (Exempel:** Om ett bord är bokat 18:00 så blockeras det två timmar före och två timmar efter starttiden. Det innebär att bokningar som startar mellan 16:01 och 19:59 inte är tillåtna. Bordet blir ledigt igen 20:00.)
-- []  Hantera restaurangens meny med möjlighet att administrera rätter (lägga till, uppdatera och ta bort).
+- [X]  Hantera restaurangens meny med möjlighet att administrera rätter (lägga till, uppdatera och ta bort).
 
 🤝 **Autentisering för administratörer**
-- []  API:et ska stödja inloggning för administratörer.
-- []  En administratör ska kunna logga in genom att skicka in användarnamn och lösenord till en endpoint (t.ex. `POST /login`).
-- []  Om inloggningen lyckas ska en JWT returneras som används för att komma åt de skyddade endpointsen.
-- []  Endast administratörer med en giltig JWT ska kunna hantera bokningar, bord och menyer.
+- [X]  API:et ska stödja inloggning för administratörer.
+- [X]  En administratör ska kunna logga in genom att skicka in användarnamn och lösenord till en endpoint (t.ex. `POST /login`).
+- [X]  Om inloggningen lyckas ska en JWT returneras som används för att komma åt de skyddade endpointsen.
+- [X]  Endast administratörer med en giltig JWT ska kunna hantera bokningar, bord och menyer.
 
 ⚡ **Prestandaoptimering**
 För att säkerställa att systemet fungerar effektivt ska du genomföra följande prestandaoptimeringar:
 
 - [X]  Se till att databasfrågor är optimerade för att minimera laddningstider och resursanvändning.
 - [X]  Implementera asynkrona metoder i API för att stödja flera samtidiga användare och förbättra responsiviteten.
+
+
+TODO while working on part 2 assignment:
+- []  Fix DTOs and AutoMapper
+- []  Cleanup Controllers (AdminController and UserController and AuthController should be one controller probably)
+- []  Double check Asyncs and proper return codes
