@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Services.IService;
@@ -47,6 +48,7 @@ namespace ResturantRESTAPI.Controllers
         //To be the Admin cancel booking based on any details
         [HttpPost]
         [Route("cancel-by-details")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CancelBookingByDetails(int? bookingID = null, int? tableID = 0, int? CustomeerID = 0, DateTime? bookingDate = null)
         {
             var result = await _bookingService.CancelBookingAsync(bookingID, tableID, CustomeerID, bookingDate);

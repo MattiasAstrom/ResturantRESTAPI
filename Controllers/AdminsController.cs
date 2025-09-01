@@ -7,5 +7,6 @@ namespace ResturantRESTAPI.Controllers
     [ApiController]
     public class AdminsController : ControllerBase
     {
+
     }
 }

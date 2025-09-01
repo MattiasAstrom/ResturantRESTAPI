@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ResturantRESTAPI.Services.IService;
 
@@ -23,6 +24,7 @@ namespace ResturantRESTAPI.Controllers
 
         //Admin stuff
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult AddMenuItem([FromBody] Models.MenuItem menuItem)
         {
             if (menuItem == null)
@@ -33,6 +35,7 @@ namespace ResturantRESTAPI.Controllers
             return CreatedAtAction(nameof(GetAllMenuItems), new { id = createdMenuItem.Id }, createdMenuItem);
         }
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteMenuItem(int id)
         {
             if (!_menuItemService.RemoveMenuItemAsync(id).Result)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ResturantRESTAPI.Services.IService;
 
@@ -25,6 +26,7 @@ namespace ResturantRESTAPI.Controllers
         }
 
         [HttpPost("create")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateBooking([FromBody] ResturantRESTAPI.Models.Booking booking)
         {
             if (booking == null)
@@ -55,6 +57,7 @@ namespace ResturantRESTAPI.Controllers
         }
 
         [HttpDelete("AdminCancel")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CancelBooking(int? bookingID = null, int? tableID = 0, int? CustomeerID = 0, DateTime? bookingDate = null)
         {
             if (bookingID == null && (tableID == 0 || CustomeerID == 0 || bookingDate == null))
