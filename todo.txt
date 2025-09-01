@@ -37,3 +37,4 @@ TODO while working on part 2 assignment:
 - []  Fix DTOs and AutoMapper
 - []  Cleanup Controllers (AdminController and UserController and AuthController should be one controller probably)
 - []  Double check Asyncs and proper return codes
+- []  Change the usage of DateTimes
