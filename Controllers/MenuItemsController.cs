@@ -48,7 +48,7 @@ namespace ResturantRESTAPI.Controllers
             return Ok("Menu item Deleted successfully.");
         }
 
-        [HttpPost]
+        [HttpPost("Update")]
         [Authorize(Roles = "Admin")]
         public IActionResult UpdateMenuItemAsync(int menuItemId, MenuItemDTO updatedMenuItem)
         {
