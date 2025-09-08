@@ -14,48 +14,50 @@ namespace ResturantRESTAPI.Controllers
     {
         private readonly ResturantDbContext _context;
         private readonly IConfiguration _configuration;
+
         public AuthController(ResturantDbContext context, IConfiguration config)
         {
             _context = context;
             _configuration = config;
         }
 
-        [HttpPost("Admin Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(AdminDTO admin)
         {
             var validAdmin = await _context.Admins.FirstOrDefaultAsync(a => a.Username == admin.Username);
             if (validAdmin == null)
-                return Unauthorized("Invalid Info");
+                return Unauthorized("Invalid username or password");
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(admin.Password, validAdmin.PasswordHash);
             if (!isPasswordValid)
-                return Unauthorized("Invalid Info");
+                return Unauthorized("Invalid username or password");
 
             var token = JwtTokenUtility.GenerateToken(validAdmin, _configuration);
 
             return Ok(new { token });
         }
 
-        [HttpPost("Admin Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register(AdminDTO admnin)
         {
-            var existingAdmin = await _context.Admins.FirstOrDefaultAsync(a => a.Username == "admin");
+            var existingAdmin = await _context.Admins.FirstOrDefaultAsync(a => a.Username == admnin.Username);
+            
             if (existingAdmin != null)
             {
                 return BadRequest("Admin user already exists.");
             }
+
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(admnin.Password);
-            admnin.Password = hashedPassword;
 
             var convertToAdmin = new Admin
             {
                 Username = admnin.Username,
-                PasswordHash = admnin.Password
+                PasswordHash = hashedPassword
             };
 
             _context.Admins.Add(convertToAdmin);
             await _context.SaveChangesAsync();
-            return Created();
+            return Ok("Admin registered successfully");
         }
     }
 }

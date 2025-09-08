@@ -19,7 +19,7 @@ namespace ResturantRESTAPI.Controllers
         }
 
         [HttpGet("available-tables")]
-        public async Task<IActionResult> GetAvailableTables(DateTime date, int guests)
+        public async Task<IActionResult> GetAvailableTablesAsync(DateTime date, int guests)
         {
             var availableTables = await _bookingService.GetAvailableTablesAsync(date, guests);
             return Ok(availableTables);
@@ -28,6 +28,9 @@ namespace ResturantRESTAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingDTO booking)
         {
+            if (booking == null)
+                return BadRequest("Invalid booking data.");
+
             var result = await _bookingService.CreateBookingAsync(booking);
             if (result)
                 return Ok(new { message = "Booking created successfully" });
@@ -39,6 +42,9 @@ namespace ResturantRESTAPI.Controllers
         [Route("cancel")]
         public async Task<IActionResult> CancelBooking([FromBody] CustomerDTO customer)
         {
+            if (customer == null || string.IsNullOrEmpty(customer.PhoneNumber)) //phoneNumber should be required 
+                return BadRequest("Invalid customer data.");
+
             var result = await _bookingService.CancelBookingAsync(customer);
             if (result)
                 return Ok(new { message = "Cancelled successfully" });

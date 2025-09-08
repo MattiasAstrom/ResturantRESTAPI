@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ResturantRESTAPI.Models;
+using BCrypt.Net;
 
 namespace ResturantRESTAPI.Data
 {
@@ -37,7 +38,7 @@ namespace ResturantRESTAPI.Data
 
             //seed some mock data
             modelBuilder.Entity<Admin>().HasData(
-                new Admin { Id = 1, Username = "admin", PasswordHash = "password" } //todo add bcrypt
+                new Admin { Id = 1, Username = "admin", PasswordHash = BCrypt.Net.BCrypt.HashPassword("password") }
             );
 
             modelBuilder.Entity<Table>().HasData(

@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ResturantRESTAPI.Data;
 using ResturantRESTAPI.DTOs;
+using ResturantRESTAPI.Migrations;
 using ResturantRESTAPI.Models;
 using ResturantRESTAPI.Repositories.IRepositories;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ResturantRESTAPI.Repositories
 {
@@ -18,20 +20,25 @@ namespace ResturantRESTAPI.Repositories
         {
             if (booking == null)
                 return false;
-            
-            var newCustomer = new Customer
-            {
-                Name = booking.CustomerName,
-                PhoneNumber = booking.CustomerPhoneNumber
-            };
 
-            _context.Add(newCustomer);
-            await _context.SaveChangesAsync();
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.PhoneNumber == booking.CustomerPhoneNumber);
+
+            if (customer == null)
+            {
+                customer = new Customer
+                {
+                    Name = booking.CustomerName,
+                    PhoneNumber = booking.CustomerPhoneNumber
+                };
+
+                _context.Customers.Add(customer);
+                await _context.SaveChangesAsync();
+            }
 
             var newBooking = new Booking
             {
                 FK_Table = booking.TableID,
-                FK_Customer = newCustomer.Id,
+                FK_Customer = customer.Id,
                 StartTime = booking.StartTime,
                 NumberOfGuests = booking.NumberOfGuests
             };
@@ -43,23 +50,25 @@ namespace ResturantRESTAPI.Repositories
 
         public async Task<List<TableDTO>> GetAvailableTablesAsync(DateTime startTime, int numberOfGuests)
         {
+            await UpdateTableOccupancy();
+
             //fit the number of guests
-            var tables = _context.Tables
+            var tables = await _context.Tables
                 .Where(t => t.Capacity >= numberOfGuests)
-                .ToList();
+                .ToListAsync();
 
             //grab overlapping bookings
-            var bookedTableIds = _context.Bookings
-                .Where(b => b.StartTime <= startTime.AddHours(-2) && startTime.AddHours(2) >= startTime)
+            var bookedTableIds = await _context.Bookings
+                .Where(b => b.StartTime.AddHours(-2) < startTime && startTime < b.StartTime.AddHours(2))
                 .Select(b => b.FK_Table)
-                .ToList();
+                .ToListAsync();
 
             //remove overlap
             var availableTables = tables
                 .Where(t => !bookedTableIds.Contains(t.Id))
                 .ToList();
 
-            //map to DTO
+            //manual map to DTO
             var availableTableDTOs = availableTables
                 .Select(t => new TableDTO
                 {
@@ -72,39 +81,56 @@ namespace ResturantRESTAPI.Repositories
             return availableTableDTOs;
         }
 
+        private async Task UpdateTableOccupancy()
+        {
+            var currentTime = DateTime.Now;
+            double cleanUpDbTableInterval = 10; 
+
+            var oldBookings = _context.Bookings.Where(b => b.StartTime.AddHours(cleanUpDbTableInterval) < currentTime);
+            _context.Bookings.RemoveRange(oldBookings);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<bool> CancelBookingAsync(CustomerDTO customer)
         {
-            var booking = await _context.Bookings.FirstOrDefaultAsync(t => t.Customer.PhoneNumber == customer.PhoneNumber);
-            if (booking == null)
+            if (customer == null || string.IsNullOrEmpty(customer.PhoneNumber)) //phonenumber should be a required field
                 return false;
             
+            var booking = await _context.Bookings.Include(b => b.Customer)
+                .FirstOrDefaultAsync(b => b.Customer.PhoneNumber == customer.PhoneNumber);
+
+            if (booking == null)
+                return false;
+
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
             return true;
         }
 
         //admin cancellation based on any parameter
-        public async Task<bool> CancelBookingAsync(int? bookingID = null, int? tableID = 0, int? CustomeerID = 0, DateTime? bookingDate = null)
+        public async Task<bool> CancelBookingAsync(int? bookingID = null, int? tableID = 0, int? customerID = 0, DateTime? bookingDate = null)
         {
             //check if any parameter is provided
-            if (bookingID == null && tableID == 0 && CustomeerID == 0 && bookingDate == null)
+            if (bookingID == null && tableID == 0 && customerID == 0 && bookingDate == null)
                 return false;
 
             //remove the booking based on the provided parameter
-            var booking = new Booking();
-            if (bookingID != null)
-                booking = _context.Bookings.FirstOrDefault(t => t.Id == bookingID);
-            else if (tableID != 0)
-                booking = _context.Bookings.FirstOrDefault(t => t.FK_Table == tableID);
-            else if (CustomeerID != 0)
-                booking = _context.Bookings.FirstOrDefault(t => t.FK_Customer == CustomeerID);
-            else if (bookingDate != null)
-                booking = _context.Bookings.FirstOrDefault(t => t.StartTime == bookingDate);
+            var bookingQuery = _context.Bookings.AsQueryable();
 
-            if (booking == null)
+            if (bookingID != null)
+                bookingQuery = bookingQuery.Where(b => b.Id == bookingID);
+            if (tableID != 0)
+                bookingQuery = bookingQuery.Where(b => b.FK_Table == tableID);
+            if (customerID != 0)
+                bookingQuery = bookingQuery.Where(b => b.FK_Customer == customerID);
+            if (bookingDate != null)
+                bookingQuery = bookingQuery.Where(b => b.StartTime == bookingDate);
+
+            var bookingsToRemove = await bookingQuery.ToListAsync();
+            if (!bookingsToRemove.Any())
                 return false;
 
-            _context.Bookings.Remove(booking);
+            _context.Bookings.RemoveRange(bookingsToRemove);
             await _context.SaveChangesAsync();
             return true;
         }

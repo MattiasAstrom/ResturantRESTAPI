@@ -34,9 +34,9 @@ namespace ResturantRESTAPI.Services
             return _tableRepo.RemoveTableAsync(tableId);
         }
 
-        public Task<bool> UpdateTableCapacityAsync(int tableId, int newCapacity)
+        public Task<bool> UpdateTableAsync(int tableId, TableDTO newTable)
         {
-            return _tableRepo.UpdateTableCapacityAsync(tableId, newCapacity);
+            return _tableRepo.UpdateTableAsync(tableId, newTable);
         }
     }
 }

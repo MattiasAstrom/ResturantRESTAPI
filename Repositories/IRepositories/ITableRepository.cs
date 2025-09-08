@@ -7,7 +7,7 @@ namespace ResturantRESTAPI.Repositories.IRepositories
     {
         Task<bool> AddTableAsync(TableDTO newTable);
         Task<bool> RemoveTableAsync(int tableId);
-        Task<bool> UpdateTableCapacityAsync(int tableId, int newCapacity);
+        Task<bool> UpdateTableAsync(int tableId, TableDTO newTable);
         Task<List<TableDTO>> GetAllTablesAsync();
         Task<TableDTO> GetTableByIdAsync(int tableId);
     }

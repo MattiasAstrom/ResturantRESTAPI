@@ -9,7 +9,7 @@ namespace ResturantRESTAPI.Repositories
     public class TableRepository : ITableRepository
     {
         private readonly ResturantDbContext _context;
-        
+
         public TableRepository(ResturantDbContext ctx)
         {
             _context = ctx;
@@ -65,11 +65,20 @@ namespace ResturantRESTAPI.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> UpdateTableCapacityAsync(int tableId, int newCapacity)
+        public async Task<bool> UpdateTableAsync(int tableId, TableDTO updatedTable)
         {
+            if (updatedTable == null)
+                return false;
+
             var table = await _context.Tables.FirstOrDefaultAsync(t => t.Id == tableId);
-            if (table == null) return false;
-            table.Capacity = newCapacity;
+
+            if (table == null)
+                return false;
+
+            table.TableNumber = updatedTable.TableNumber;
+            table.Capacity = updatedTable.Capacity;
+            table.IsOccupied = updatedTable.IsOccupied;
+
             _context.Tables.Update(table);
             return await _context.SaveChangesAsync() > 0;
         }

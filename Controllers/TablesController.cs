@@ -2,75 +2,73 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ResturantRESTAPI.DTOs;
+using ResturantRESTAPI.Services;
 using ResturantRESTAPI.Services.IService;
 
 namespace ResturantRESTAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class TablesController : ControllerBase
     {
-        private readonly IBookingService _bookingService;
-        public TablesController(IBookingService service)
+        private readonly ITableService _tableService;
+
+        public TablesController(ITableService service)
         {
-            _bookingService = service;
+            _tableService = service;
         }
-        [HttpGet("available")]
+
+        [HttpGet]
         public async Task<IActionResult> GetAvailableTables(DateTime startTime, int numberOfGuests)
         {
-            var tables = await _bookingService.GetAvailableTablesAsync(startTime, numberOfGuests);
-            if (tables == null || !tables.Any())
-            {
-                return NotFound("No available tables found.");
-            }
+            var tables = await _tableService.GetAllTablesAsync();
             return Ok(tables);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTableById(int id)
+        {
+            var table = await _tableService.GetTableByIdAsync(id);
+            if (table == null) return NotFound($"Table with ID {id} not found.");
+            return Ok(table);
+        }
+
         [HttpPost("create")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateBooking([FromBody] BookingDTO booking)
+        public async Task<IActionResult> AddTable([FromBody] TableDTO newTable)
         {
-            if (booking == null)
-            {
-                return BadRequest("Invalid booking data.");
-            }
-            var result = await _bookingService.CreateBookingAsync(booking);
-            if (!result)
-            {
-                return StatusCode(500, "Failed to create booking.");
-            }
-            return Ok("Booking created successfully.");
+            if (newTable == null)
+                return BadRequest("Invalid table data.");
+
+            var success = await _tableService.AddTableAsync(newTable);
+
+            if (!success)
+                return StatusCode(500, "Failed to create table.");
+
+            return CreatedAtAction(nameof(GetTableById), new { id = newTable.TableNumber }, newTable);
+        }
+        
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateTable(int id, [FromBody] TableDTO updatedTable)
+        {
+            if (updatedTable == null) 
+                return BadRequest("Invalid table data.");
+
+            var success = await _tableService.UpdateTableAsync(id, updatedTable);
+            if (!success)
+                return NotFound($"Table with ID {id} not found.");
+
+            return Ok("Table updated successfully.");
         }
 
-        [HttpDelete("CustomerCancel")]
-        public async Task<IActionResult> CancelBooking([FromBody] CustomerDTO customer)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveTable(int id)
         {
-            if (customer == null)
-            {
-                return BadRequest("Invalid customer data.");
-            }
-            var result = await _bookingService.CancelBookingAsync(customer);
-            if (!result)
-            {
-                return StatusCode(500, "Failed to cancel booking.");
-            }
-            return Ok("Booking cancelled successfully.");
-        }
+            var success = await _tableService.RemoveTableAsync(id);
+            if (!success)
+                return NotFound($"Table with ID {id} not found.");
 
-        [HttpDelete("AdminCancel")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CancelBooking(int? bookingID = null, int? tableID = 0, int? CustomeerID = 0, DateTime? bookingDate = null)
-        {
-            if (bookingID == null && (tableID == 0 || CustomeerID == 0 || bookingDate == null))
-            {
-                return BadRequest("Invalid cancellation parameters.");
-            }
-            var result = await _bookingService.CancelBookingAsync(bookingID, tableID, CustomeerID, bookingDate);
-            if (!result)
-            {
-                return StatusCode(500, "Failed to cancel booking.");
-            }
-            return Ok("Booking cancelled successfully.");
+            return Ok("Table removed successfully.");
         }
     }
 }
